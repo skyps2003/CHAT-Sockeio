@@ -2,11 +2,12 @@ import useConversation from "../../zustand/useConversation";
 import { useSocketContext } from "../../context/SocketContext";
 
 const Conversation = ({ conversation, emoji, lastIdx }) => {
-	const { selectedConversation, setSelectedConversation } = useConversation();
+	const { selectedConversation, setSelectedConversation, unreadMessages } = useConversation();
 	const { onlineUsers } = useSocketContext();
 
 	const isSelected = selectedConversation?._id === conversation._id;
 	const isOnline = onlineUsers?.includes(conversation._id);
+	const unreadCount = unreadMessages[conversation._id] || 0; // ✅ Contador
 
 	return (
 		<>
@@ -48,9 +49,16 @@ const Conversation = ({ conversation, emoji, lastIdx }) => {
 							{conversation.fullName}
 						</p>
 
-						<span className="text-lg opacity-70 group-hover:opacity-100 transition">
-							{emoji}
-						</span>
+						{/* ✅ Emoji o Badge de No leídos */}
+						{unreadCount > 0 ? (
+							<span className="bg-green-500 text-black text-xs font-bold px-2 py-0.5 rounded-full shadow-lg animate-bounce">
+								{unreadCount}
+							</span>
+						) : (
+							<span className="text-lg opacity-70 group-hover:opacity-100 transition">
+								{emoji}
+							</span>
+						)}
 					</div>
 				</div>
 			</div>

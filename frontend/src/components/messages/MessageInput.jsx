@@ -1,19 +1,22 @@
-import { useState, useRef } from "react";
-import { BsSend, BsPaperclip, BsX, BsMic, BsStopCircle } from "react-icons/bs"; // ✅ Nuevos iconos
+import { useState, useRef, useEffect } from "react";
+import { BsSend, BsPaperclip, BsX, BsMic, BsStopCircle, BsPencil, BsReply } from "react-icons/bs";
 import useSendMessage from "../../hooks/useSendMessage";
+import useEditMessage from "../../hooks/useEditMessage"; // ✅ Hook Editar
 import { useSocketContext } from "../../context/SocketContext";
 import useConversation from "../../zustand/useConversation";
-import toast from "react-hot-toast"; // ✅ Para errores de micro
+import toast from "react-hot-toast";
 
 const MessageInput = () => {
 	const [message, setMessage] = useState("");
 	const [selectedFile, setSelectedFile] = useState(null);
+
 	// ✅ Estados para grabación
 	const [isRecording, setIsRecording] = useState(false);
 	const [recordingDuration, setRecordingDuration] = useState(0);
 
 	const fileInputRef = useRef(null);
 	const typingTimeoutRef = useRef(null);
+	const inputRef = useRef(null); // Para enfocar el input
 
 	// ✅ Refs para audio
 	const mediaRecorderRef = useRef(null);
@@ -21,8 +24,30 @@ const MessageInput = () => {
 	const timerIntervalRef = useRef(null);
 
 	const { loading, sendMessage } = useSendMessage();
+	const { editMessage, loading: editLoading } = useEditMessage(); // ✅ Hook
 	const { socket } = useSocketContext();
-	const { selectedConversation } = useConversation();
+
+	// ✅ Estados globales para Reply / Edit
+	const {
+		selectedConversation,
+		replyingTo, setReplyingTo,
+		editingMessage, setEditingMessage
+	} = useConversation();
+
+	// 1. Cuando le damos a "Editar", rellenamos el input con el texto actual
+	useEffect(() => {
+		if (editingMessage) {
+			setMessage(editingMessage.message);
+			inputRef.current?.focus();
+		}
+	}, [editingMessage]);
+
+	// 2. Si estamos respondiendo, enfocar input
+	useEffect(() => {
+		if (replyingTo) {
+			inputRef.current?.focus();
+		}
+	}, [replyingTo]);
 
 	const handleFileChange = (e) => {
 		const file = e.target.files[0];
@@ -81,7 +106,7 @@ const MessageInput = () => {
 
 	const cancelRecording = () => {
 		stopRecording();
-		setSelectedFile(null); // Cancelar y no guardar
+		setSelectedFile(null);
 	};
 
 	const formatTime = (seconds) => {
@@ -89,7 +114,14 @@ const MessageInput = () => {
 		const secs = (seconds % 60).toString().padStart(2, '0');
 		return `${mins}:${secs}`;
 	};
-	// ---------------------------
+
+	// ✅ CANCELAR ESTADO (Cerrar banner de editar/responder)
+	const cancelAction = () => {
+		setReplyingTo(null);
+		setEditingMessage(null);
+		setMessage("");
+		setSelectedFile(null);
+	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -98,19 +130,59 @@ const MessageInput = () => {
 		if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 		socket?.emit("stopTyping", selectedConversation._id);
 
-		await sendMessage(message, selectedFile);
+		// A) MODO EDICIÓN
+		if (editingMessage) {
+			await editMessage(editingMessage._id, message);
+			setEditingMessage(null);
+		}
+		// B) MODO ENVÍO (Nuevo o Respuesta)
+		else {
+			await sendMessage(message, selectedFile);
+		}
 
 		setMessage("");
 		setSelectedFile(null);
 		if (fileInputRef.current) fileInputRef.current.value = "";
 	};
 
-	return (
-		<form onSubmit={handleSubmit} className="p-4 border-t border-green-500/20">
+	const isLoading = loading || editLoading;
 
-			{/* Previsualización de archivo o audio grabado */}
-			{selectedFile && (
-				<div className="flex items-center gap-2 mb-2 bg-gray-800 p-2 rounded-lg w-fit animate-fade-in-up">
+	return (
+		<form onSubmit={handleSubmit} className="p-4 border-t border-green-500/20 flex flex-col gap-2">
+
+			{/* ✅ PANEL DE AVISO: RESPONDER O EDITAR */}
+			{replyingTo && (
+				<div className="flex items-center justify-between p-2 rounded-lg bg-gray-800/50 border-l-4 border-green-500 animate-slide-up">
+					<div className="flex flex-col text-sm ml-2">
+						<span className="flex items-center gap-2 text-green-400 font-bold">
+							<BsReply /> Respondiendo a {replyingTo.senderId === selectedConversation._id ? selectedConversation.fullName : "ti mismo"}
+						</span>
+						<span className="text-gray-400 line-clamp-1 italic">{replyingTo.message || "Archivo adjunto"}</span>
+					</div>
+					<button type="button" onClick={cancelAction} className="text-gray-400 hover:text-white p-1">
+						<BsX size={20} />
+					</button>
+				</div>
+			)}
+
+			{editingMessage && (
+				<div className="flex items-center justify-between p-2 rounded-lg bg-blue-900/30 border-l-4 border-blue-500 animate-slide-up">
+					<div className="flex flex-col text-sm ml-2">
+						<span className="flex items-center gap-2 text-blue-400 font-bold">
+							<BsPencil /> Editando mensaje
+						</span>
+						<span className="text-gray-400 line-clamp-1 italic">{editingMessage.message}</span>
+					</div>
+					<button type="button" onClick={cancelAction} className="text-gray-400 hover:text-white p-1">
+						<BsX size={20} />
+					</button>
+				</div>
+			)}
+
+
+			{/* Previsualización de archivo */}
+			{selectedFile && !isRecording && (
+				<div className="flex items-center gap-2 mb-1 bg-gray-800 p-2 rounded-lg w-fit animate-fade-in-up">
 					<span className="text-xs text-green-400 truncate max-w-[200px]">
 						{selectedFile.type.startsWith("audio") ? "🎤 Nota de voz lista" : selectedFile.name}
 					</span>
@@ -161,6 +233,7 @@ const MessageInput = () => {
 
 						<input
 							type="text"
+							ref={inputRef}
 							className="
 								flex-1 h-11 px-4
 								rounded-xl
@@ -170,15 +243,19 @@ const MessageInput = () => {
 								placeholder-gray-400
 								focus:outline-none focus:border-green-400
 							"
-							placeholder="Escribe un mensaje…"
+							placeholder={editingMessage ? "Edita tu mensaje..." : "Escribe un mensaje…"}
 							value={message}
 							onChange={handleInputChange}
+							// Si está editando y presiona Escape, cancelamos
+							onKeyDown={(e) => {
+								if (e.key === "Escape") cancelAction();
+							}}
 						/>
 
 						{/* Botón dinámico: ENVIAR vs MICRÓFONO */}
 						{message.trim() || selectedFile ? (
-							<button type="submit" disabled={loading} className="send-btn text-green-500">
-								{loading ? <span className="loading loading-spinner loading-sm"></span> : <BsSend size={20} />}
+							<button type="submit" disabled={isLoading} className="send-btn text-green-500">
+								{isLoading ? <span className="loading loading-spinner loading-sm"></span> : <BsSend size={20} />}
 							</button>
 						) : (
 							<button

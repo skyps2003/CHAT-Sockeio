@@ -2,17 +2,19 @@ import { useEffect, useState } from "react";
 import useConversation from "../../zustand/useConversation";
 import MessageInput from "./MessageInput";
 import Messages from "./Messages";
+import ChatSettings from "./ChatSettings"; // ✅ Ajustes
 import { TiMessages } from "react-icons/ti";
-import { BsCameraVideo, BsTelephone } from "react-icons/bs";
+import { BsCameraVideo, BsTelephone, BsThreeDotsVertical } from "react-icons/bs";
 import { useAuthContext } from "../../context/AuthContext";
 import { useSocketContext } from "../../context/SocketContext";
 import { useCallContext } from "../../context/CallContext";
 
 const MessageContainer = () => {
-	const { selectedConversation, setSelectedConversation } = useConversation();
+	const { selectedConversation, setSelectedConversation, markAsRead } = useConversation();
 	const { socket, onlineUsers } = useSocketContext();
 	const { callUser } = useCallContext();
 	const [isTyping, setIsTyping] = useState(false);
+	const [showSettings, setShowSettings] = useState(false); // ✅ Estado para menú de ajustes
 
 	const isOnline = onlineUsers?.includes(selectedConversation?._id);
 
@@ -23,26 +25,32 @@ const MessageContainer = () => {
 
 	// ✅ CORRECCIÓN 1: Lógica para MARCAR COMO VISTO (Seen)
 	useEffect(() => {
-		if (selectedConversation?._id && socket) {
-			// A) Al entrar al chat, avisar al backend que ya vimos los mensajes
-			socket.emit("markMessagesAsSeen", {
-				conversationId: selectedConversation._id,
-			});
+		if (selectedConversation?._id) {
 
-			// B) Si llega un mensaje nuevo MIENTRAS tengo el chat abierto, marcarlo visto al instante
-			const handleMsgSeenInside = (newMessage) => {
-				if (newMessage.senderId === selectedConversation._id) {
-					socket.emit("markMessagesAsSeen", {
-						conversationId: selectedConversation._id,
-					});
-				}
-			};
+			// 1. Limpiar notificaciones no leídas
+			markAsRead(selectedConversation._id);
 
-			socket.on("newMessage", handleMsgSeenInside);
+			if (socket) {
+				// A) Al entrar al chat, avisar al backend que ya vimos los mensajes
+				socket.emit("markMessagesAsSeen", {
+					conversationId: selectedConversation._id,
+				});
 
-			return () => {
-				socket.off("newMessage", handleMsgSeenInside);
-			};
+				// B) Si llega un mensaje nuevo MIENTRAS tengo el chat abierto, marcarlo visto al instante
+				const handleMsgSeenInside = (newMessage) => {
+					if (newMessage.senderId === selectedConversation._id) {
+						socket.emit("markMessagesAsSeen", {
+							conversationId: selectedConversation._id,
+						});
+					}
+				};
+
+				socket.on("newMessage", handleMsgSeenInside);
+
+				return () => {
+					socket.off("newMessage", handleMsgSeenInside);
+				};
+			}
 		}
 	}, [selectedConversation, socket]);
 
@@ -64,13 +72,13 @@ const MessageContainer = () => {
 	}, [socket, selectedConversation]);
 
 	return (
-		<div className="flex flex-col flex-1 bg-black/30 backdrop-blur-xl min-h-full max-h-full">
+		<div className="flex flex-col flex-1 bg-doodle min-h-full max-h-full relative">
 			{!selectedConversation ? (
 				<NoChatSelected />
 			) : (
 				<>
 					{/* HEADER */}
-					<div className="h-[64px] flex items-center justify-between px-6 border-b border-green-500/20 bg-black/40 backdrop-blur-xl shrink-0">
+					<div className="h-[64px] flex items-center justify-between px-6 border-b border-green-500/20 bg-black/40 backdrop-blur-xl shrink-0 relative z-20">
 						<div className="flex items-center gap-3">
 							<div className="relative">
 								<img
@@ -91,13 +99,26 @@ const MessageContainer = () => {
 								)}
 							</div>
 						</div>
-						<div className="flex items-center gap-4">
+
+						<div className="flex items-center gap-2">
 							<button onClick={() => callUser(selectedConversation._id)} className="text-green-500/70 hover:text-green-400 transition hover:bg-green-500/10 p-2 rounded-full">
 								<BsTelephone size={20} />
 							</button>
 							<button onClick={() => callUser(selectedConversation._id)} className="text-green-500/70 hover:text-green-400 transition hover:bg-green-500/10 p-2 rounded-full">
 								<BsCameraVideo size={22} />
 							</button>
+
+							{/* ✅ BOTÓN DE AJUSTES */}
+							<div className="relative">
+								<button
+									onClick={() => setShowSettings(!showSettings)}
+									className={`text-green-500/70 hover:text-green-400 transition p-2 rounded-full ${showSettings ? "bg-green-500/20 text-green-400" : "hover:bg-green-500/10"}`}
+								>
+									<BsThreeDotsVertical size={22} />
+								</button>
+								{/* ✅ MODAL DE AJUSTES */}
+								{showSettings && <ChatSettings onClose={() => setShowSettings(false)} />}
+							</div>
 						</div>
 					</div>
 

@@ -5,7 +5,7 @@ import notificationSound from "../assets/sounds/notification.mp3";
 
 const useListenMessages = () => {
 	const { socket } = useSocketContext();
-	const { messages, setMessages, selectedConversation } = useConversation();
+	const { messages, setMessages, selectedConversation, incrementUnread } = useConversation();
 
 	useEffect(() => {
 		if (!socket) return;
@@ -16,12 +16,12 @@ const useListenMessages = () => {
 			sound.play();
 			newMessage.shouldShake = true;
 
-			if (selectedConversation && (newMessage.senderId === selectedConversation._id || newMessage.receiverId === selectedConversation._id)) {
+			// Si el chat está abierto y es el remitente, lo agregamos
+			if (selectedConversation?._id === newMessage.senderId) {
 				setMessages([...messages, newMessage]);
-			} else if (!selectedConversation) {
-				// Opción notificaciones globales
 			} else {
-				setMessages([...messages, newMessage]);
+				// 🔔 SI NO ESTÁ ABIERTO, INCREMENTAR CONTADOR NO LEÍDOS
+				incrementUnread(newMessage.senderId);
 			}
 		};
 

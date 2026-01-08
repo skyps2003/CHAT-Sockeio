@@ -1,8 +1,15 @@
+import { useState } from "react";
 import Conversations from "./Conversations";
 import LogoutButton from "./LogoutButton";
 import SearchInput from "./SearchInput";
+import ProfileSettings from "./ProfileSettings"; // ✅ Importar
+import { BsGear } from "react-icons/bs";
+import { useAuthContext } from "../../context/AuthContext"; // ✅ Contexto
 
 const Sidebar = () => {
+    const [showProfile, setShowProfile] = useState(false);
+    const { authUser } = useAuthContext(); // ✅ Hook
+
     return (
         <div
             className="
@@ -18,8 +25,22 @@ const Sidebar = () => {
             </div>
 
             {/* Título de sección opcional o separador */}
-            <div className="px-2 mb-2 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                Chats
+            <div className="px-2 mb-2 flex justify-between items-center text-xs font-bold text-gray-400 uppercase tracking-wider">
+                <span>Chats</span>
+
+                {/* ✅ Avatar del usuario actual como botón de ajustes */}
+                <button
+                    onClick={() => setShowProfile(true)}
+                    className="flex items-center gap-2 hover:bg-white/5 p-1.5 rounded-lg transition group"
+                    title="Configurar Perfil"
+                >
+                    <span className="text-[10px] font-semibold text-gray-300 group-hover:text-white transition max-w-[80px] truncate">
+                        {authUser?.fullName}
+                    </span>
+                    <div className="w-8 h-8 rounded-full overflow-hidden border border-transparent group-hover:border-green-500 transition">
+                        <img src={authUser?.profilePic} alt="me" className="w-full h-full object-cover" />
+                    </div>
+                </button>
             </div>
 
             {/* Lista de chats */}
@@ -27,8 +48,11 @@ const Sidebar = () => {
                 <Conversations />
             </div>
 
-            {/* Logout (Ahora tiene su propio contenedor y diseño en el componente) */}
+            {/* Logout */}
             <LogoutButton />
+
+            {/* ✅ MODAL DE PERFIL */}
+            {showProfile && <ProfileSettings onClose={() => setShowProfile(false)} />}
         </div>
     );
 };

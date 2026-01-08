@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import useChatSettings from "../../zustand/useChatSettings";
 import useDeleteChat from "../../hooks/useDeleteChat";
 import useConversation from "../../zustand/useConversation";
-import { BsTrash } from "react-icons/bs";
+import { BsTrash, BsX } from "react-icons/bs";
 
 const ChatSettings = ({ onClose }) => {
     const { selectedConversation } = useConversation();
@@ -10,7 +10,7 @@ const ChatSettings = ({ onClose }) => {
     const { deleteChat, loading } = useDeleteChat();
     const modalRef = useRef();
 
-    const currentSettings = settings[selectedConversation._id] || { background: "default", bubbleStyle: "modern" };
+    const currentSettings = settings[selectedConversation._id] || { bubbleStyle: "modern" };
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -22,14 +22,6 @@ const ChatSettings = ({ onClose }) => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [onClose]);
 
-    const backgrounds = [
-        { id: "default", name: "Original", class: "bg-gray-900" },
-        { id: "galaxy", name: "Galaxia", class: "bg-gradient-to-br from-indigo-900 via-purple-900 to-black" },
-        { id: "sunset", name: "Atardecer", class: "bg-gradient-to-br from-orange-900 via-red-900 to-black" },
-        { id: "forest", name: "Bosque", class: "bg-gradient-to-br from-green-900 to-black" },
-        { id: "love", name: "Amor", class: "bg-gradient-to-br from-pink-900 to-black" },
-    ];
-
     const styles = [
         { id: "modern", name: "Moderno" },
         { id: "comic", name: "Cómic" },
@@ -38,21 +30,14 @@ const ChatSettings = ({ onClose }) => {
 
     return (
         <div className="absolute top-16 right-4 z-50 animate-in fade-in zoom-in-95 origin-top-right">
-            <div ref={modalRef} className="bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 p-4 rounded-2xl shadow-2xl w-72 text-gray-200">
-                <h3 className="font-bold mb-3 text-lg">Personalizar Chat</h3>
+            <div ref={modalRef} className="bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 p-4 rounded-2xl shadow-2xl w-72 text-gray-200 relative">
 
-                {/* FONDOS */}
-                <div className="mb-4">
-                    <p className="text-xs text-gray-400 mb-2 uppercase tracking-wider font-bold">Fondo</p>
-                    <div className="grid grid-cols-3 gap-2">
-                        {backgrounds.map((bg) => (
-                            <button
-                                key={bg.id}
-                                onClick={() => updateSetting(selectedConversation._id, "background", bg.id)}
-                                className={`h-12 rounded-lg border-2 transition ${bg.class} ${currentSettings.background === bg.id ? "border-green-500 scale-105 shadow-green-500/20 shadow-lg" : "border-transparent hover:scale-105"}`}
-                            />
-                        ))}
-                    </div>
+                {/* HEAD & CLOSE */}
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-bold text-lg">Personalizar</h3>
+                    <button onClick={onClose} className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-white/10 transition">
+                        <BsX size={24} />
+                    </button>
                 </div>
 
                 {/* ESTILOS */}

@@ -1,19 +1,23 @@
 import { useAuthContext } from "../../context/AuthContext";
 import useConversation from "../../zustand/useConversation";
-import useDeleteMessage from "../../hooks/useDeleteMessage"; // ✅ Hook Borrar (asegúrate de crearlo)
+import useDeleteMessage from "../../hooks/useDeleteMessage";
 import { useSocketContext } from "../../context/SocketContext";
+import useChatSettings from "../../zustand/useChatSettings"; // ✅ Settings
 import { extractTime } from "../../utils/extractTime";
 import { BsDownload, BsCheck2, BsCheck2All, BsEmojiSmile, BsThreeDotsVertical, BsReply, BsPencil, BsTrash } from "react-icons/bs";
 import { useState, useRef } from "react";
 
 const Message = ({ message }) => {
     const { authUser } = useAuthContext();
-    // ✅ Nuevas funciones del store
     const { selectedConversation, setReplyingTo, setEditingMessage } = useConversation();
     const { socket } = useSocketContext();
-    const { deleteMessage } = useDeleteMessage(); // ✅ Hook Borrar
+    const { deleteMessage } = useDeleteMessage();
 
-    const [showMenu, setShowMenu] = useState(false); // ✅ Estado menú
+    // ✅ Obtener estilos
+    const { getSettings } = useChatSettings();
+    const { bubbleStyle = "modern" } = getSettings(selectedConversation?._id);
+
+    const [showMenu, setShowMenu] = useState(false);
     const [showReactionMenu, setShowReactionMenu] = useState(false);
     const closeMenuTimerRef = useRef(null);
 
@@ -23,7 +27,6 @@ const Message = ({ message }) => {
     const formattedTime = extractTime(message.createdAt);
     const chatClassName = fromMe ? "chat-end" : "chat-start";
 
-    // ✅ Detectar si está borrado
     const isDeleted = message.deletedEveryone;
     const msgContent = isDeleted ? "🚫 Este mensaje fue eliminado" : message.message;
 
@@ -31,9 +34,31 @@ const Message = ({ message }) => {
     const BACKEND_URL = "http://localhost:4200";
     const fileUrl = message.fileUrl ? `${BACKEND_URL}${message.fileUrl}` : null;
 
-    const bubbleStyles = fromMe
-        ? "bg-green-500 text-white rounded-2xl rounded-br-md"
-        : "bg-gray-800 text-gray-100 rounded-2xl rounded-bl-md";
+    // ✅ LÓGICA DE ESTILOS DE BURBUJA
+    const getBubbleClasses = () => {
+        const base = "px-3 py-2 flex flex-col gap-1 relative shadow-md transition-all";
+
+        switch (bubbleStyle) {
+            case "comic":
+                return fromMe
+                    ? `${base} bg-yellow-400 text-black border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-black rounded-lg`
+                    : `${base} bg-white text-black border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-black rounded-lg`;
+
+            case "cloud":
+                return fromMe
+                    ? `${base} bg-gradient-to-r from-blue-400 to-blue-200 text-blue-900 rounded-[20px] rounded-br-[4px] border border-blue-100`
+                    : `${base} bg-white text-gray-700 rounded-[20px] rounded-bl-[4px] border border-gray-100`;
+
+            case "modern":
+            default:
+                return fromMe
+                    ? `${base} bg-green-500 text-white rounded-2xl rounded-br-md`
+                    : `${base} bg-gray-800 text-gray-100 rounded-2xl rounded-bl-md`;
+        }
+    };
+
+    const bubbleStyles = getBubbleClasses();
+
 
     // --- HANDLERS ---
     const handleReaction = (emoji) => {
@@ -86,12 +111,13 @@ const Message = ({ message }) => {
                     </div>
                 )}
 
-                <div className={`px-3 py-2 shadow-md ${bubbleStyles} flex flex-col gap-1 relative`}>
+                <div className={bubbleStyles}>
 
                     {/* ✅ VISUALIZACIÓN DE RESPUESTA (Reply Bubble) */}
                     {message.replyTo && !isDeleted && (
-                        <div className="mb-1 p-2 rounded bg-black/20 border-l-4 border-white/30 text-xs flex flex-col gap-0.5 opacity-80">
-                            <span className="font-bold opacity-70">{message.replyTo.senderId === authUser._id ? "Tú" : selectedConversation.fullName}</span>
+                        <div className={`mb-1 p-2 rounded text-xs flex flex-col gap-0.5 opacity-90 ${bubbleStyle === 'comic' ? 'bg-black/10 border-l-2 border-black' : 'bg-black/20 border-l-4 border-white/30'
+                            }`}>
+                            <span className="font-bold opacity-80">{message.replyTo.senderId === authUser._id ? "Tú" : selectedConversation.fullName}</span>
                             <span className="line-clamp-1">{message.replyTo.message || "Archivo adjunto"}</span>
                         </div>
                     )}
@@ -106,16 +132,16 @@ const Message = ({ message }) => {
                     {/* ARCHIVOS (Si no está borrado) */}
                     {!isDeleted && message.fileUrl && (
                         <>
-                            {message.fileType === "image" && <img src={fileUrl} alt="img" className="max-w-[240px] rounded-xl object-cover" />}
-                            {message.fileType === "video" && <video src={fileUrl} controls className="max-w-[240px] rounded-xl" />}
-                            {message.fileType === "audio" && <div className="bg-black/20 rounded-full px-3 py-1 w-[220px]"><audio controls className="w-full h-7"><source src={fileUrl} /></audio></div>}
-                            {!["image", "video", "audio"].includes(message.fileType) && <a href={fileUrl} download className="flex items-center gap-2 underline text-xs"><BsDownload /> Descargar archivo</a>}
+                            {message.fileType === "image" && <img src={fileUrl} alt="img" className="max-w-[240px] rounded-xl object-cover mb-1" />}
+                            {message.fileType === "video" && <video src={fileUrl} controls className="max-w-[240px] rounded-xl mb-1" />}
+                            {message.fileType === "audio" && <div className="bg-black/20 rounded-full px-3 py-1 w-[220px] mb-1"><audio controls className="w-full h-7"><source src={fileUrl} /></audio></div>}
+                            {!["image", "video", "audio"].includes(message.fileType) && <a href={fileUrl} download className="flex items-center gap-2 underline text-xs mb-1"><BsDownload /> Descargar archivo</a>}
                         </>
                     )}
 
                     {/* Link Preview (Si existe y no está borrado) */}
                     {!isDeleted && message.linkMetadata && (
-                        <a href={message.linkMetadata.url} target="_blank" className="block mt-1 rounded border border-white/10 bg-black/20 overflow-hidden">
+                        <a href={message.linkMetadata.url} target="_blank" className="block mt-1 mb-1 rounded border border-white/10 bg-black/20 overflow-hidden">
                             {message.linkMetadata.image && <img src={message.linkMetadata.image} className="w-full h-24 object-cover opacity-80" />}
                             <div className="p-2"><span className="text-[10px] font-bold opacity-90 block truncate">{message.linkMetadata.title}</span></div>
                         </a>
@@ -133,14 +159,14 @@ const Message = ({ message }) => {
 
                     {/* REACCIONES */}
                     {!isDeleted && message.reactions?.length > 0 && (
-                        <div className={`absolute -bottom-4 ${fromMe ? "left-2" : "right-2"} bg-gray-900 rounded-full px-2 py-0.5 text-xs flex gap-1 shadow`}>
+                        <div className={`absolute -bottom-2 ${fromMe ? "left-0 translate-x-[-50%]" : "right-0 translate-x-[50%]"} bg-gray-900 border border-gray-700 rounded-full px-1.5 py-0.5 text-[10px] flex gap-0.5 shadow-md z-10`}>
                             {message.reactions.slice(0, 3).map((r, i) => <span key={i}>{r.emoji}</span>)}
                             {message.reactions.length > 3 && <span>+</span>}
                         </div>
                     )}
                 </div>
 
-                <div className="flex items-center gap-1 text-[11px] text-gray-400 mt-1 justify-end">
+                <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-0.5 justify-end px-1">
                     {formattedTime}
                     {/* ✅ Indicador Editado */}
                     {!isDeleted && message.isEdited && <span className="italic ml-1 opacity-70">editado</span>}
