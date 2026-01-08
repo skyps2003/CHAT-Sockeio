@@ -1,0 +1,310 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+	background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url("/x.jpg");
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center;
+}
+
+.radio-inputs {
+	display: flex;
+	justify-content: center;
+	gap: 14px;
+	user-select: none;
+}
+
+.radio-input {
+	position: absolute;
+	opacity: 0;
+}
+
+.radio-tile {
+	width: 110px;
+	height: 110px;
+	border-radius: 16px;
+	background: #020617;
+	border: 2px solid rgba(34, 197, 94, 0.35);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: all 0.25s ease;
+	box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.6);
+}
+
+.radio-icon {
+	font-size: 36px;
+	color: #9ca3af;
+	transition: color 0.3s ease;
+}
+
+.radio-label {
+	margin-top: 6px;
+	font-size: 14px;
+	font-weight: 600;
+	color: #9ca3af;
+	transition: color 0.3s ease;
+}
+
+/* Hover */
+.radio-tile:hover {
+	border-color: #22c55e;
+	box-shadow: 0 0 18px rgba(34, 197, 94, 0.35);
+}
+
+/* Checked */
+.radio-input:checked+.radio-tile {
+	background: linear-gradient(135deg, #22c55e, #16a34a);
+	border-color: #22c55e;
+	box-shadow: 0 0 25px rgba(34, 197, 94, 0.6);
+}
+
+.radio-input:checked+.radio-tile .radio-icon,
+.radio-input:checked+.radio-tile .radio-label {
+	color: #020617;
+}
+
+
+.logout-btn {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	width: 46px;
+	height: 46px;
+	border: none;
+	border-radius: 50%;
+	cursor: pointer;
+	position: relative;
+	overflow: hidden;
+	transition: all 0.3s ease;
+	background: linear-gradient(135deg, #22c55e, #16a34a);
+	box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+}
+
+/* Icon */
+.logout-icon {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #020617;
+	transition: all 0.3s ease;
+}
+
+/* Text */
+.logout-text {
+	position: absolute;
+	right: 0;
+	width: 0;
+	opacity: 0;
+	color: #020617;
+	font-size: 1rem;
+	font-weight: 700;
+	white-space: nowrap;
+	transition: all 0.3s ease;
+}
+
+/* Hover */
+.logout-btn:hover {
+	width: 130px;
+	border-radius: 40px;
+	box-shadow: 0 0 30px rgba(34, 197, 94, 0.7);
+}
+
+.logout-btn:hover .logout-icon {
+	width: 30%;
+	padding-left: 20px;
+}
+
+.logout-btn:hover .logout-text {
+	width: 70%;
+	opacity: 1;
+	padding-right: 16px;
+}
+
+/* Click */
+.logout-btn:active {
+	transform: translate(2px, 2px);
+}
+
+/* Disabled */
+.logout-btn:disabled {
+	opacity: 0.7;
+	cursor: not-allowed;
+}
+
+.send-btn {
+	font-family: inherit;
+	font-size: 15px;
+	background: linear-gradient(to bottom,
+			rgba(34, 197, 94, 0.9),
+			rgba(22, 163, 74, 1));
+	color: white;
+	padding: 0.6em 1em;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: none;
+	border-radius: 999px;
+	box-shadow: 0 6px 15px rgba(34, 197, 94, 0.25);
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.send-btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 10px 20px rgba(34, 197, 94, 0.35);
+}
+
+.send-btn:active {
+	transform: scale(0.96);
+}
+
+.send-btn span {
+	margin-left: 0.4em;
+	font-weight: 600;
+}
+
+.send-btn svg {
+	width: 16px;
+	height: 16px;
+	fill: white;
+	transition: transform 0.3s ease;
+}
+
+.send-btn .svg-wrapper {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	background-color: rgba(255, 255, 255, 0.2);
+	transition: background-color 0.3s ease;
+}
+
+.send-btn:hover .svg-wrapper {
+	background-color: rgba(255, 255, 255, 0.35);
+}
+
+.send-btn:hover svg {
+	transform: rotate(45deg);
+}
+
+.send-btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+
+/* ... tus estilos anteriores ... */
+
+/* Animación de entrada suave para mensajes */
+@keyframes slideIn {
+	0% {
+		opacity: 0;
+		transform: translateY(20px) scale(0.95);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+.animate-message {
+	animation: slideIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* INPUTS */
+.input-base {
+	width: 100%;
+	height: 44px;
+	padding-left: 40px;
+	border-radius: 12px;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(34, 197, 94, 0.3);
+	color: white;
+	outline: none;
+}
+
+.input-base:focus {
+	border-color: #22c55e;
+	box-shadow: 0 0 10px rgba(34, 197, 94, 0.35);
+}
+
+.icon-input {
+	position: absolute;
+	left: 12px;
+	top: 50%;
+	transform: translateY(-50%);
+	color: #22c55e;
+	width: 18px;
+	height: 18px;
+}
+
+/* BOTÓN */
+.btn-submit {
+	width: 100%;
+	padding: 0.6rem;
+	border-radius: 14px;
+	background: linear-gradient(135deg, #22c55e, #16a34a);
+	color: #020617;
+	font-weight: bold;
+	transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+	box-shadow: 0 0 25px rgba(34, 197, 94, 0.6);
+	transform: translateY(-1px);
+}
+
+/* RADIO GENDER */
+.radio-inputs {
+	display: flex;
+	justify-content: center;
+	gap: 16px;
+}
+
+.radio-input {
+	display: none;
+}
+
+.radio-tile {
+	width: 110px;
+	height: 110px;
+	background: #020617;
+	border-radius: 16px;
+	border: 2px solid rgba(34, 197, 94, 0.35);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: all 0.25s ease;
+}
+
+.radio-icon {
+	font-size: 36px;
+	color: #9ca3af;
+}
+
+.radio-label {
+	font-size: 14px;
+	color: #9ca3af;
+	font-weight: 600;
+}
+
+.radio-input:checked+.radio-tile {
+	background: linear-gradient(135deg, #22c55e, #16a34a);
+	box-shadow: 0 0 25px rgba(34, 197, 94, 0.6);
+}
+
+.radio-input:checked+.radio-tile .radio-icon,
+.radio-input:checked+.radio-tile .radio-label {
+	color: #020617;
+}
