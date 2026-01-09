@@ -8,7 +8,10 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
 	cors: {
-		origin: ["http://localhost:3000"], // Ajusta esto si tu puerto frontend cambia
+		origin: [
+            "http://localhost:3000", // Para que siga funcionando en tu PC
+            "https://ambitious-beach-07ae23d10.2.azurestaticapps.net" // ✅ AGREGA ESTO
+        ],
 		methods: ["GET", "POST"],
 	},
 });
