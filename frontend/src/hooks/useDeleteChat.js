@@ -5,8 +5,9 @@ import useConversation from "../zustand/useConversation";
 const useDeleteChat = () => {
     const [loading, setLoading] = useState(false);
     const { selectedConversation, setMessages } = useConversation();
-    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
-
+const BACKEND_URL = import.meta.env.MODE === "development"
+	? "http://localhost:5000"
+	: "https://chat-sockeio-1.onrender.com"
     const deleteChat = async () => {
         if (!window.confirm("¿Seguro que quieres vaciar este chat? Se borrará para ti.")) return;
 

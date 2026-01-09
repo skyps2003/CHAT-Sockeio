@@ -5,7 +5,9 @@ import toast from "react-hot-toast";
 const useLogout = () => {
 	const [loading, setLoading] = useState(false);
 	const { setAuthUser } = useAuthContext();
-	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+	const BACKEND_URL = import.meta.env.MODE === "development"
+	? "http://localhost:5000"
+	: "https://chat-sockeio-1.onrender.com"
 
 	const logout = async () => {
 		setLoading(true);

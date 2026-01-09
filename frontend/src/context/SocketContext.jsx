@@ -15,7 +15,14 @@ export const SocketContextProvider = ({ children }) => {
 
 	useEffect(() => {
 		if (authUser) {
-			const socket = io("https://chat-sockeio-1.onrender.com", {
+			// ✅ LÓGICA INTELIGENTE:
+			// 1. Si estás programando en tu PC ("development"), usa localhost.
+			// 2. Si ya subiste el código a Azure ("production"), usa Render.
+			const socketURL = import.meta.env.MODE === "development"
+				? "http://localhost:5000"
+				: "https://chat-sockeio-1.onrender.com";
+
+			const socket = io(socketURL, {
 				query: {
 					userId: authUser._id,
 				},
@@ -23,7 +30,6 @@ export const SocketContextProvider = ({ children }) => {
 
 			setSocket(socket);
 
-			// socket.on() is used to listen to the events. can be used both on client and server side
 			socket.on("getOnlineUsers", (users) => {
 				setOnlineUsers(users);
 			});

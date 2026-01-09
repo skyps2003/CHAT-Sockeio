@@ -5,7 +5,9 @@ import toast from "react-hot-toast";
 const useEditMessage = () => {
     const [loading, setLoading] = useState(false);
     const { messages, setMessages, setEditingMessage } = useConversation();
-    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+    const BACKEND_URL = import.meta.env.MODE === "development"
+	? "http://localhost:5000"
+	: "https://chat-sockeio-1.onrender.com"
 
     const editMessage = async (messageId, newMessageContent) => {
         setLoading(true);

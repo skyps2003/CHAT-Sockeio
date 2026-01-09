@@ -5,7 +5,9 @@ import { useAuthContext } from "../context/AuthContext.jsx";
 const useSignup = () => {
 	const [loading, setLoading] = useState(false);
 	const { authUser, setAuthUser } = useAuthContext();
-	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+	const BACKEND_URL = import.meta.env.MODE === "development"
+	? "http://localhost:5000"
+	: "https://chat-sockeio-1.onrender.com"
 
 	const signup = async ({
 		fullName,

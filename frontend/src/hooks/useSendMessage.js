@@ -5,7 +5,9 @@ import toast from "react-hot-toast";
 const useSendMessage = () => {
 	const [loading, setLoading] = useState(false);
 	const { messages, setMessages, selectedConversation, replyingTo, setReplyingTo } = useConversation();
-    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+    const BACKEND_URL = import.meta.env.MODE === "development"
+	? "http://localhost:5000"
+	: "https://chat-sockeio-1.onrender.com"
 	const sendMessage = async (message, file) => {
 		setLoading(true);
 		try {

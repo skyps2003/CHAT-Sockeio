@@ -5,11 +5,14 @@ import { useAuthContext } from "../context/AuthContext";
 const useUpdateProfile = () => {
     const [loading, setLoading] = useState(false);
     const { setAuthUser } = useAuthContext();
+    const BACKEND_URL = import.meta.env.MODE === "development"
+	? "http://localhost:5000"
+	: "https://chat-sockeio-1.onrender.com"
 
     const updateProfile = async ({ fullName, username, password, profilePic }) => {
         setLoading(true);
         try {
-            const res = await fetch("/api/users/update", {
+            const res = await fetch(`${BACKEND_URL}/api/users/update`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ fullName, username, password, profilePic }),
