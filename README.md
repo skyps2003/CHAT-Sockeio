@@ -96,12 +96,6 @@ npm run dev
 ```
 La aplicación estará disponible usualmente en `http://localhost:5173`.
 
-## 📦 Estructura del Proyecto
-
--   **`/backend`**: Contiene todo el código del servidor (Controladores, Modelos, Rutas, Configuración de DB y Sockets).
--   **`/frontend`**: Contiene la aplicación React (Componentes, Hooks, Contextos, Estilos).
--   **`Login.txt`**: Archivo de referencia (según estructura observada).
-
 ## 🚀 Despliegue
 
 ### Backend
