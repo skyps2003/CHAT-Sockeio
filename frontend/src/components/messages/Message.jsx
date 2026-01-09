@@ -31,7 +31,7 @@ const Message = ({ message }) => {
     const msgContent = isDeleted ? "🚫 Este mensaje fue eliminado" : message.message;
 
     const profilePic = fromMe ? authUser?.profilePic : selectedConversation?.profilePic;
-    const BACKEND_URL = "http://localhost:4200";
+    const BACKEND_URL = "https://chat-sockeio-1.onrender.com";
     const fileUrl = message.fileUrl ? `${BACKEND_URL}${message.fileUrl}` : null;
 
     // ✅ LÓGICA DE ESTILOS DE BURBUJA

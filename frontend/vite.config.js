@@ -8,10 +8,14 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: "http://localhost:4200",
+        target: "https://chat-sockeio-1.onrender.com",
+        changeOrigin: true, // Importante: Engaña al backend para que crea que la petición viene del mismo origen
+        secure: false,      // 👈 ¡ESTO SOLUCIONA TU ERROR! Ignora la verificación estricta SSL
       },
       '/uploads': {
-        target: "http://localhost:4200",
+        target: "https://chat-sockeio-1.onrender.com",
+        changeOrigin: true,
+        secure: false,      // También aquí, para que carguen las imágenes
       },
     }
   }
