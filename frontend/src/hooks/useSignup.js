@@ -32,6 +32,7 @@ const useSignup = () => {
 			const res = await fetch(`${BACKEND_URL}/api/auth/signup`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
+				credentials: "include", // ✅ AGREGA ESTA LÍNEA (¡Vital!)
 				body: JSON.stringify({
 					fullName,
 					username,

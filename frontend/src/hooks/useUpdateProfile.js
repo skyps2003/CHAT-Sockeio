@@ -15,6 +15,7 @@ const useUpdateProfile = () => {
             const res = await fetch(`${BACKEND_URL}/api/users/update`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include", // ✅ AGREGA ESTA LÍNEA (¡Vital!)
                 body: JSON.stringify({ fullName, username, password, profilePic }),
             });
 

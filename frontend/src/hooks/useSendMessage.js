@@ -24,6 +24,7 @@ const useSendMessage = () => {
 			const res = await fetch(`${BACKEND_URL}/api/messages/send/${selectedConversation._id}`, {
 				method: "POST",
 				body: formData,
+				credentials: "include", // ✅ AGREGA ESTA LÍNEA (¡Vital!)
 			});
 
 			const data = await res.json();

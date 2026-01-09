@@ -15,6 +15,7 @@ const useDeleteMessage = () => {
             const res = await fetch(`${BACKEND_URL}/api/messages/delete/${messageId}`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include", // ✅ AGREGA ESTA LÍNEA (¡Vital!)
                 body: JSON.stringify({ type }),
             });
 

@@ -15,6 +15,7 @@ const useLogout = () => {
 			const res = await fetch(`${BACKEND_URL}/api/auth/logout`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
+				credentials: "include", // ✅ AGREGA ESTA LÍNEA (¡Vital!)
 			});
 			const data = await res.json();
 			if (data.error) {

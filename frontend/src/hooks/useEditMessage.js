@@ -15,6 +15,7 @@ const useEditMessage = () => {
             const res = await fetch(`${BACKEND_URL}/api/messages/edit/${messageId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include", // ✅ AGREGA ESTA LÍNEA (¡Vital!)
                 body: JSON.stringify({ message: newMessageContent }),
             });
 
