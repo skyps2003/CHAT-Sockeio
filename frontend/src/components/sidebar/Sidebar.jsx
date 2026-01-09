@@ -13,7 +13,7 @@ const Sidebar = () => {
     return (
         <div
             className="
-            w-80 h-full flex flex-col
+            w-full md:w-80 h-full flex flex-col
             p-4 
             bg-[#020617]/80 backdrop-blur-xl /* Negro Carbón con transparencia */
             border-r border-[#22C55E]/30    /* Borde Verde Neón sutil */

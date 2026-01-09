@@ -1,7 +1,9 @@
 import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
+import User from "../models/user.model.js"; // ✅ Importar User
 import { getReceiverSocketId, io } from "../socket/socket.js";
 import ogs from "open-graph-scraper";
+import { getGeminiResponse } from "../utils/gemini.js"; // ✅ Importar servicio Gemini
 
 export const sendMessage = async (req, res) => {
 	try {
@@ -82,9 +84,61 @@ export const sendMessage = async (req, res) => {
 
 		res.status(201).json(newMessage);
 
+		// ✅ INTELIGENCIA ARTIFICIAL: Si el mensaje es para Gemini, responder
+		handleGeminiResponse(senderId, receiverId, message, conversation);
+
 	} catch (error) {
 		console.log("Error en sendMessage controller:", error);
 		res.status(500).json({ error: "Error al enviar el mensaje" });
+	}
+};
+
+// ==========================================
+// ✅ AUXILIAR: M anejador de Respuestas Gemini
+// ==========================================
+const handleGeminiResponse = async (senderId, receiverId, userMessage, conversation) => {
+	try {
+		const receiverUser = await User.findById(receiverId);
+		if (receiverUser?.username !== "gemini_ai") return;
+
+		// 1. Simular "Escribiendo..."
+		const receiverSocketId = getReceiverSocketId(senderId);
+		if (receiverSocketId) io.to(receiverSocketId).emit("typing", receiverId);
+
+		// 2. Obtener historial (limitado a últimos 10 mensajes para contexto)
+		const lastMessages = await Message.find({
+			_id: { $in: conversation.messages }
+		}).sort({ createdAt: 1 }).limit(10).populate("senderId", "username");
+
+		const history = lastMessages.map(msg => ({
+			role: msg.senderId.username === "gemini_ai" ? "model" : "user",
+			message: msg.message,
+			senderUsername: msg.senderId.username
+		}));
+
+		// 3. Llamar a Gemini
+		const aiText = await getGeminiResponse(userMessage, history);
+
+		// 4. Crear mensaje de respuesta
+		const aiMessage = new Message({
+			senderId: receiverId, // Gemini es el remitente
+			receiverId: senderId, // Usuario es el receptor
+			message: aiText
+		});
+
+		if (aiMessage) {
+			conversation.messages.push(aiMessage._id);
+			await Promise.all([conversation.save(), aiMessage.save()]);
+		}
+
+		// 5. Emitir respuesta y detener "Escribiendo..."
+		if (receiverSocketId) {
+			io.to(receiverSocketId).emit("stopTyping", receiverId);
+			io.to(receiverSocketId).emit("newMessage", aiMessage);
+		}
+
+	} catch (error) {
+		console.error("Error manejando respuesta Gemini:", error);
 	}
 };
 

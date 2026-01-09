@@ -5,6 +5,7 @@ import Messages from "./Messages";
 import ChatSettings from "./ChatSettings"; // ✅ Ajustes
 import { TiMessages } from "react-icons/ti";
 import { BsCameraVideo, BsTelephone, BsThreeDotsVertical } from "react-icons/bs";
+import { IoArrowBack } from "react-icons/io5";
 import { useAuthContext } from "../../context/AuthContext";
 import { useSocketContext } from "../../context/SocketContext";
 import { useCallContext } from "../../context/CallContext";
@@ -80,6 +81,12 @@ const MessageContainer = () => {
 					{/* HEADER */}
 					<div className="h-[64px] flex items-center justify-between px-6 border-b border-green-500/20 bg-black/40 backdrop-blur-xl shrink-0 relative z-20">
 						<div className="flex items-center gap-3">
+							<button
+								className='md:hidden text-gray-300 hover:text-white transition'
+								onClick={() => setSelectedConversation(null)}
+							>
+								<IoArrowBack size={24} />
+							</button>
 							<div className="relative">
 								<img
 									src={selectedConversation.profilePic}

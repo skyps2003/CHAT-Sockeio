@@ -16,7 +16,7 @@ const Login = () => {
 
 	return (
 		<div className="w-full max-w-md">
-			<div className="p-8 rounded-2xl bg-[#020617]/80 backdrop-blur-xl border border-green-500/20 shadow-2xl transition-all duration-300 hover:shadow-green-500/30">
+			<div className="p-8 rounded-2xl bg-[#020617]/80 backdrop-blur-xl border border-green-500/20 shadow-2xl transition-all duration-300 hover:shadow-green-500/30 max-h-[80vh] overflow-y-auto">
 
 				<h1 className="text-3xl font-bold text-center text-white">
 					Bienvenido a <span className="text-green-400">CHATIX</span>

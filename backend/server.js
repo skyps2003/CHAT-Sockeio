@@ -15,25 +15,15 @@ dotenv.config();
 const PORT = process.env.PORT || 4200;
 const __dirname = path.resolve();
 
-// Middleware
 app.use(express.json());
 app.use(cookieParser());
 
-// Rutas de autenticación
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/users", userRoutes);
 
-// ✅ NUEVO: Hacer pública la carpeta de uploads para acceder a las imágenes
+// Para servir imágenes
 app.use("/uploads", express.static(path.join(__dirname, "backend/uploads")));
-
-// (Opcional) Servir frontend estático si estás en producción
-app.use(express.static(path.join(__dirname, "/frontend/dist")));
-
-// Opción A (Recomendada): Usar Expresión Regular para "todo lo demás"
-app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
-});
 
 server.listen(PORT, () => {
     connectToMongoDB();

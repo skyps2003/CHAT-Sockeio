@@ -26,8 +26,8 @@ const SignUp = () => {
 	};
 
 	return (
-		<div className="flex flex-col items-center justify-center min-w-96 mx-auto">
-			<div className="w-full p-6 rounded-2xl bg-[#020617]/80 backdrop-blur-xl border border-green-500/20 shadow-2xl">
+		<div className="flex flex-col items-center justify-center w-full max-w-lg mx-auto">
+			<div className="w-full p-6 rounded-2xl bg-[#020617]/80 backdrop-blur-xl border border-green-500/20 shadow-2xl max-h-[80vh] overflow-y-auto">
 
 				<h1 className="text-3xl font-bold text-center text-white mb-5">
 					Crear cuenta <span className="text-green-400">CHATIX</span>
