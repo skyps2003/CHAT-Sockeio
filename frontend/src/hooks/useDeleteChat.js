@@ -5,13 +5,14 @@ import useConversation from "../zustand/useConversation";
 const useDeleteChat = () => {
     const [loading, setLoading] = useState(false);
     const { selectedConversation, setMessages } = useConversation();
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
     const deleteChat = async () => {
         if (!window.confirm("¿Seguro que quieres vaciar este chat? Se borrará para ti.")) return;
 
         setLoading(true);
         try {
-            const res = await fetch(`/api/messages/delete_chat/${selectedConversation._id}`, {
+            const res = await fetch(`${BACKEND_URL}/api/messages/delete_chat/${selectedConversation._id}`, {
                 method: "DELETE",
             });
             const data = await res.json();

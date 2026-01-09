@@ -5,11 +5,12 @@ import toast from "react-hot-toast";
 const useDeleteMessage = () => {
     const [loading, setLoading] = useState(false);
     const { messages, setMessages } = useConversation();
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
     const deleteMessage = async (messageId, type) => { // type: "me" | "everyone"
         setLoading(true);
         try {
-            const res = await fetch(`/api/messages/delete/${messageId}`, {
+            const res = await fetch(`${BACKEND_URL}/api/messages/delete/${messageId}`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ type }),

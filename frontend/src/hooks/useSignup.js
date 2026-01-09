@@ -5,6 +5,7 @@ import { useAuthContext } from "../context/AuthContext.jsx";
 const useSignup = () => {
 	const [loading, setLoading] = useState(false);
 	const { authUser, setAuthUser } = useAuthContext();
+	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
 	const signup = async ({
 		fullName,
@@ -26,7 +27,7 @@ const useSignup = () => {
 		setLoading(true);
 
 		try {
-			const res = await fetch("/api/auth/signup", {
+			const res = await fetch(`${BACKEND_URL}/api/auth/signup`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({

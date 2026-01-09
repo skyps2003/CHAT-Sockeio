@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 const useSendMessage = () => {
 	const [loading, setLoading] = useState(false);
 	const { messages, setMessages, selectedConversation, replyingTo, setReplyingTo } = useConversation();
-
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 	const sendMessage = async (message, file) => {
 		setLoading(true);
 		try {
@@ -19,7 +19,7 @@ const useSendMessage = () => {
 				formData.append("replyToId", replyingTo._id);
 			}
 
-			const res = await fetch(`/api/messages/send/${selectedConversation._id}`, {
+			const res = await fetch(`${BACKEND_URL}/api/messages/send/${selectedConversation._id}`, {
 				method: "POST",
 				body: formData,
 			});

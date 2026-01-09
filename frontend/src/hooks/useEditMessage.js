@@ -5,11 +5,12 @@ import toast from "react-hot-toast";
 const useEditMessage = () => {
     const [loading, setLoading] = useState(false);
     const { messages, setMessages, setEditingMessage } = useConversation();
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
     const editMessage = async (messageId, newMessageContent) => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/messages/edit/${messageId}`, {
+            const res = await fetch(`${BACKEND_URL}/api/messages/edit/${messageId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message: newMessageContent }),
