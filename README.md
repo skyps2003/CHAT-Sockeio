@@ -2,6 +2,12 @@
 
 Este es una aplicación completa de Chat y Videollamadas en tiempo real, construida con el stack MERN (MongoDB, Express, React, Node.js) y potenciada por WebSockets y WebRTC.
 
+## 📦 Estructura del Proyecto
+
+-   **`/backend`**: Contiene todo el código del servidor (Controladores, Modelos, Rutas, Configuración de DB y Sockets).
+-   **`/frontend`**: Contiene la aplicación React (Componentes, Hooks, Contextos, Estilos).
+
+
 ## 🚀 Características Principales
 
 -   **Autenticación de Usuarios**: Registro e inicio de sesión seguros con JWT.
@@ -95,3 +101,11 @@ La aplicación estará disponible usualmente en `http://localhost:5173`.
 -   **`/backend`**: Contiene todo el código del servidor (Controladores, Modelos, Rutas, Configuración de DB y Sockets).
 -   **`/frontend`**: Contiene la aplicación React (Componentes, Hooks, Contextos, Estilos).
 -   **`Login.txt`**: Archivo de referencia (según estructura observada).
+
+## 🚀 Despliegue
+
+### Backend
+El backend se encuentra desplegado actualmente en [Render](https://render.com/).
+
+### Frontend
+Se planea desplegar el frontend en **Azure Static Web Apps**.
