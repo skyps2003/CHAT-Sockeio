@@ -12,10 +12,13 @@ Este es una aplicación completa de Chat y Videollamadas en tiempo real, constru
 
 -   **Autenticación de Usuarios**: Registro e inicio de sesión seguros con JWT.
 -   **Chat en Tiempo Real**: Mensajería instantánea utilizando Socket.io.
+-   **Inteligencia Artificial (@IA)**: Integración con Gemini AI para responder preguntas directamente en el chat.
+-   **Búsqueda en Tiempo Real**: Filtrado instantáneo de conversaciones.
+-   **Notas de Voz**: Envío de audios grabados directamente desde la interfaz.
+-   **Compartir Imágenes**: Envío de fotos y memes.
 -   **Videollamadas**: Comunicación de video peer-to-peer (P2P) integrada con PeerJS.
 -   **Estados en Línea**: Visualización de usuarios conectados en tiempo real.
--   **Interfaz Moderna**: UI responsiva y elegante construida con TailwindCSS y DaisyUI.
--   **Gestión de Estado**: Manejo eficiente del estado global con Zustand.
+-   **Interfaz Moderna**: UI responsiva y elegante construida con TailwindCSS, DaisyUI y Glassmorphism.
 
 ## 🛠️ Stack Tecnológico
 
@@ -25,7 +28,7 @@ Este es una aplicación completa de Chat y Videollamadas en tiempo real, constru
 -   **Mongoose**: Modelado de objetos para MongoDB.
 -   **JWT (JSON Web Tokens)**: Autenticación segura sin estado.
 -   **Multer**: Manejo de subida de archivos (imágenes, etc.).
--   **Cookie Parser**: Manejo de cookies para la sesión.
+-   **Google Generative AI**: Integración con Gemini Pro.
 
 ### Frontend
 -   **React (Vite)**: Biblioteca de UI rápida y moderna.
@@ -33,18 +36,15 @@ Este es una aplicación completa de Chat y Videollamadas en tiempo real, constru
 -   **Zustand**: Gestor de estado ligero y escalable.
 -   **Socket.io-client**: Cliente para la conexión con el servidor de sockets.
 -   **PeerJS**: Implementación simplificada de WebRTC para videollamadas.
--   **React Router**: Navegación SPA (Single Page Application).
--   **React Hot Toast**: Notificaciones elegantes.
 
 ## 📋 Requisitos Previos
 
 Asegúrate de tener instalados los siguientes componentes en tu sistema:
--   **Node.js**: Versión 18 o superior (se requiere soporte moderno de JavaScript).
--   **MongoDB**: Una instancia local de MongoDB en ejecución o una URI de conexión a MongoDB Atlas.
+-   **Node.js**: Versión 18 o superior.
+-   **MongoDB**: Instancia local o Atlas.
+-   **Gemini API Key**: Clave válida de Google AI Studio.
 
 ## ⚙️ Instalación y Configuración
-
-Sigue estos pasos para levantar el proyecto localmente.
 
 ### 1. Clonar el repositorio
 ```bash
@@ -52,54 +52,40 @@ git clone <url-del-repositorio>
 cd Sistemas_Distribuidos
 ```
 
-### 2. Instalar Dependencias del Backend (Raíz)
-Desde la carpeta raíz del proyecto:
+### 2. Instalar Dependencias
 ```bash
-npm install
-```
-
-### 3. Instalar Dependencias del Frontend
-```bash
+npm install       # Backend
 cd frontend
-npm install
+npm install       # Frontend
 cd ..
 ```
 
-### 4. Configurar Variables de Entorno
-Crea un archivo llamado `.env` en la **raíz** del proyecto y añade las siguientes variables:
-
+### 3. Configurar Variables de Entorno (`.env` en raíz)
 ```env
-PORT=4200
-MONGO_DB_URI=mongodb://localhost:27017/chat_db  # O tu URI de MongoDB Atlas
-JWT_SECRET=tu_clave_secreta_super_segura
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/chat_db
+JWT_SECRET=tu_secreto
+GEMINI_API_KEY=tu_clave_de_gemini
 NODE_ENV=development
 ```
 
-> **Nota**: Asegúrate de que tu servicio de MongoDB esté corriendo si usas una base de datos local.
-
 ## ▶️ Ejecución del Proyecto
 
-Para desarrollar, necesitarás correr tanto el servidor backend como el cliente frontend.
-
-### Iniciar el Backend
-Desde la raíz del proyecto:
+### Backend
 ```bash
 npm run server
 ```
-El servidor iniciará (por defecto) en `http://localhost:4200`.
 
-### Iniciar el Frontend
-Abre una nueva terminal, ve a la carpeta `frontend` e inicia el servidor de desarrollo:
+### Frontend
 ```bash
 cd frontend
 npm run dev
 ```
-La aplicación estará disponible usualmente en `http://localhost:5173`.
 
 ## 🚀 Despliegue
 
 ### Backend
-El backend se encuentra desplegado actualmente en [Render](https://render.com/).
+Desplegado en **Render**: `https://chat-sockeio-1.onrender.com`
 
 ### Frontend
-Se planea desplegar el frontend en **Azure Static Web Apps**.
+Desplegado en **Azure Static Web Apps**: `https://ambitious-beach-07ae23d10.2.azurestaticapps.net`

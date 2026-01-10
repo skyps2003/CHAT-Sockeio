@@ -14,7 +14,7 @@ const useConversation = create((set) => ({
 
 	markAsRead: (conversationId) => set((state) => {
 		const newUnread = { ...state.unreadMessages };
-		delete newUnread[conversationId];
+		newUnread[conversationId] = 0; // ✅ Forzar a 0 en lugar de borrar
 		return { unreadMessages: newUnread };
 	}),
 

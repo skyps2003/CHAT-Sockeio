@@ -8,8 +8,9 @@ const Conversation = ({ conversation, emoji, lastIdx }) => {
 	const isSelected = selectedConversation?._id === conversation._id;
 	const isOnline = onlineUsers?.includes(conversation._id);
 	// ✅ CONTADOR DE NO LEÍDOS
-	// Priorizamos el valor del backend (más preciso), fallback al estado global (socket)
-	const unreadCount = conversation.unreadCount || unreadMessages[conversation._id] || 0;
+	// Priorizamos el valor del estado global (socket) si existe (incluso si es 0), fallback al backend
+	const globalCount = unreadMessages[conversation._id];
+	const unreadCount = globalCount !== undefined ? globalCount : (conversation.unreadCount || 0);
 
 	return (
 		<>
