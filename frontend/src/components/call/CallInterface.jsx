@@ -52,23 +52,40 @@ const CallInterface = () => {
             <div className="fixed inset-0 z-50 bg-black flex flex-col">
                 {/* Video Remoto (Pantalla Completa) */}
                 <div className="relative flex-1 bg-gray-900 flex items-center justify-center overflow-hidden">
-                    <video
-                        playsInline
-                        ref={userVideo}
-                        autoPlay
-                        className="w-full h-full object-cover"
-                    />
 
-                    {/* Mi Video (PiP) */}
-                    <div className="absolute top-4 right-4 w-32 h-48 md:w-48 md:h-72 bg-black rounded-xl overflow-hidden shadow-2xl border border-white/20">
+                    {/* VIDEO REMOTO o AVATAR */}
+                    {(isVideoEnabled && (call.callType === "video" || !call.callType)) ? (
                         <video
                             playsInline
-                            muted
-                            ref={myVideo}
+                            ref={userVideo}
                             autoPlay
-                            className="w-full h-full object-cover transform scale-x-[-1]"
+                            className="w-full h-full object-cover"
                         />
-                    </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center gap-6 animate-pulse">
+                            <div className="w-40 h-40 rounded-full border-4 border-green-500 shadow-2xl shadow-green-500/50 p-1">
+                                <img
+                                    src={`https://ui-avatars.com/api/?name=${call.name}&background=random&color=fff&size=256`}
+                                    alt="avatar"
+                                    className="w-full h-full rounded-full object-cover"
+                                />
+                            </div>
+                            <p className="text-gray-400 text-lg tracking-widest uppercase">Llamada de voz</p>
+                        </div>
+                    )}
+
+                    {/* Mi Video (PiP) - Solo si yo tengo video habilitado */}
+                    {isVideoEnabled && (
+                        <div className="absolute top-4 right-4 w-32 h-48 md:w-48 md:h-72 bg-black rounded-xl overflow-hidden shadow-2xl border border-white/20">
+                            <video
+                                playsInline
+                                muted
+                                ref={myVideo}
+                                autoPlay
+                                className="w-full h-full object-cover transform scale-x-[-1]"
+                            />
+                        </div>
+                    )}
 
                     {/* Nombre del Usuario (Overlay) */}
                     <div className="absolute top-8 left-8 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">

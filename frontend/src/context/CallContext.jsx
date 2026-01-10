@@ -52,8 +52,8 @@ export const CallContextProvider = ({ children }) => {
         });
 
         // 3. Escuchar notificación del Socket (UI)
-        socket?.on("callUser", ({ from, name: callerName, signal }) => {
-            setCall({ isReceivingCall: true, from, name: callerName, signal });
+        socket?.on("callUser", ({ from, name: callerName, signal, callType }) => {
+            setCall({ isReceivingCall: true, from, name: callerName, signal, callType });
         });
 
         socket?.on("endCall", () => {
@@ -71,8 +71,13 @@ export const CallContextProvider = ({ children }) => {
         setCallAccepted(true);
 
         // Ya tenemos el stream del useEffect (o lo pedimos aquí si es necesario)
+        // Ya tenemos el stream del useEffect (o lo pedimos aquí si es necesario)
         if (!stream) {
-            navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((currentStream) => {
+            const mediaConstraints = {
+                video: call.callType === "video" || call.callType === undefined, // Default a video si no viene
+                audio: true
+            };
+            navigator.mediaDevices.getUserMedia(mediaConstraints).then((currentStream) => {
                 setStream(currentStream);
                 if (myVideo.current) myVideo.current.srcObject = currentStream;
 
@@ -96,9 +101,14 @@ export const CallContextProvider = ({ children }) => {
         }
     };
 
-    const callUser = (id) => {
+    const callUser = (id, callType = "video") => {
         // id = ID de base de datos del usuario a llamar
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((currentStream) => {
+        const mediaConstraints = {
+            video: callType === "video",
+            audio: true
+        };
+
+        navigator.mediaDevices.getUserMedia(mediaConstraints).then((currentStream) => {
             setStream(currentStream);
             if (myVideo.current) myVideo.current.srcObject = currentStream;
 
@@ -107,6 +117,9 @@ export const CallContextProvider = ({ children }) => {
                 console.error("PeerJS no está inicializado");
                 return;
             }
+
+            // ✅ Actualizar estado de video según el tipo de llamada
+            setIsVideoEnabled(callType === "video");
 
             const call = peerInstance.current.call(id, currentStream);
 
@@ -125,6 +138,7 @@ export const CallContextProvider = ({ children }) => {
                 signalData: myPeerId, // Mi ID de Peer
                 from: authUser._id,
                 name: authUser.fullName,
+                callType, // ✅ Enviamos el tipo de llamada
             });
         });
     };

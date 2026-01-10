@@ -149,7 +149,7 @@ const MessageInput = () => {
 	const isLoading = loading || editLoading;
 
 	return (
-		<form onSubmit={handleSubmit} className="p-4 border-t border-green-500/20 flex flex-col gap-2">
+		<form onSubmit={handleSubmit} className="p-4 pb-6 md:pb-4 border-t border-green-500/20 flex flex-col gap-2 bg-black/40 backdrop-blur-md">
 
 			{/* ✅ PANEL DE AVISO: RESPONDER O EDITAR */}
 			{replyingTo && (
@@ -205,7 +205,7 @@ const MessageInput = () => {
 				{/* MODO GRABACIÓN */}
 				{isRecording ? (
 					<div className="flex-1 flex items-center gap-4 bg-red-900/20 border border-red-500/30 rounded-xl px-4 h-11 animate-pulse">
-						<span className="text-red-500 text-sm font-mono font-bold">🔴 {formatTime(recordingDuration)}</span>
+						<span className="text-white font-mono font-bold bg-red-600 px-3 py-1 rounded-full text-xs">🔴 {formatTime(recordingDuration)}</span>
 						<div className="flex-1"></div>
 						<button type="button" onClick={cancelRecording} className="text-xs text-gray-400 hover:text-white underline">
 							Cancelar

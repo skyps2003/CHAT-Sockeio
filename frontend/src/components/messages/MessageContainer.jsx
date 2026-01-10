@@ -108,10 +108,10 @@ const MessageContainer = () => {
 						</div>
 
 						<div className="flex items-center gap-2">
-							<button onClick={() => callUser(selectedConversation._id)} className="text-green-500/70 hover:text-green-400 transition hover:bg-green-500/10 p-2 rounded-full">
+							<button onClick={() => callUser(selectedConversation._id, "audio")} className="text-green-500/70 hover:text-green-400 transition hover:bg-green-500/10 p-2 rounded-full">
 								<BsTelephone size={20} />
 							</button>
-							<button onClick={() => callUser(selectedConversation._id)} className="text-green-500/70 hover:text-green-400 transition hover:bg-green-500/10 p-2 rounded-full">
+							<button onClick={() => callUser(selectedConversation._id, "video")} className="text-green-500/70 hover:text-green-400 transition hover:bg-green-500/10 p-2 rounded-full">
 								<BsCameraVideo size={22} />
 							</button>
 
