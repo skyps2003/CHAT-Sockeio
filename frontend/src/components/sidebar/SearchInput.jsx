@@ -19,9 +19,9 @@ const SearchInput = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        
+
         if (!search) return;
-        
+
         if (search.length < 3) {
             return toast.error("Escribe al menos 3 caracteres", {
                 style: {
@@ -35,7 +35,7 @@ const SearchInput = () => {
         const term = normalizeText(search);
 
         // Busca coincidencia flexible
-        const conversation = conversations.find((c) => 
+        const conversation = conversations.find((c) =>
             normalizeText(c.fullName).includes(term)
         );
 
@@ -54,36 +54,47 @@ const SearchInput = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="flex items-center gap-2 px-2 w-full">
-            <div className="relative flex-1 group">
-                {/* Ícono (Ahora cambia de color al hacer focus en el input) */}
-                <button type="submit" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-400 transition-colors cursor-pointer z-10">
-                    <IoSearchSharp className="w-5 h-5" />
-                </button>
+        <form onSubmit={handleSubmit} className="relative w-full px-4 mb-4">
+            <div className="relative group">
+                {/* 🌈 GLOW EFFECT (Fondo animado detrás) */}
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full opacity-0 group-focus-within:opacity-75 blur transition duration-500"></div>
 
-                {/* Input Estilizado */}
-                <input
-                    type="text"
-                    placeholder="Buscar chat..."
-                    className="
-                        w-full pl-10 pr-4 py-2 
-                        rounded-full
-                        bg-white/5 
-                        border border-white/10
-                        text-gray-200 
-                        placeholder-gray-500
-                        
-                        focus:outline-none 
-                        focus:border-green-600/50 
-                        focus:bg-black/40
-                        focus:text-white
-                        
-                        transition-all duration-300 ease-in-out
-                        shadow-sm
-                    "
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
+                <div className="relative flex items-center bg-[#0f172a] rounded-full overflow-hidden border border-white/10 group-focus-within:border-transparent transition-all duration-300">
+
+                    {/* INPUT */}
+                    <input
+                        type="text"
+                        placeholder="Buscar conver..."
+                        className="
+                            w-full py-3 pl-12 pr-4
+                            bg-transparent
+                            text-white text-sm font-medium
+                            placeholder-gray-500
+                            focus:outline-none
+                        "
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+
+                    {/* ICON BUTTON */}
+                    <button
+                        type="submit"
+                        className="absolute left-1 p-2 rounded-full text-gray-400 group-focus-within:text-white group-focus-within:bg-white/10 transition-all duration-300"
+                    >
+                        <IoSearchSharp className="w-5 h-5" />
+                    </button>
+
+                    {/* CLEAR BUTTON (Solo si hay texto) */}
+                    {search && (
+                        <button
+                            type="button"
+                            onClick={() => setSearch("")}
+                            className="absolute right-3 text-gray-500 hover:text-white transition animate-in zoom-in"
+                        >
+                            ✕
+                        </button>
+                    )}
+                </div>
             </div>
         </form>
     );

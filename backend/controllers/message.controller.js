@@ -84,8 +84,11 @@ export const sendMessage = async (req, res) => {
 
 		res.status(201).json(newMessage);
 
-		// ✅ INTELIGENCIA ARTIFICIAL: Si el mensaje es para Gemini, responder
-		handleGeminiResponse(senderId, receiverId, message, conversation);
+		// ✅ INTELIGENCIA ARTIFICIAL:
+		// 1. Si el chat es directo con Gemini
+		// 2. O si el mensaje menciona a @IA / @Gemini
+		const isMention = message?.includes("@IA") || message?.includes("@Gemini");
+		handleGeminiResponse(senderId, receiverId, message, conversation, isMention);
 
 	} catch (error) {
 		console.log("Error en sendMessage controller:", error);
@@ -94,16 +97,30 @@ export const sendMessage = async (req, res) => {
 };
 
 // ==========================================
-// ✅ AUXILIAR: M anejador de Respuestas Gemini
+// ✅ AUXILIAR: Manejador de Respuestas Gemini
 // ==========================================
-const handleGeminiResponse = async (senderId, receiverId, userMessage, conversation) => {
+const handleGeminiResponse = async (senderId, receiverId, userMessage, conversation, isMention = false) => {
 	try {
 		const receiverUser = await User.findById(receiverId);
-		if (receiverUser?.username !== "gemini_ai") return;
+		const isGeminiChat = receiverUser?.username === "gemini_ai";
+
+		// Solo responder si es chat directo O si hubo mención
+		if (!isGeminiChat && !isMention) return;
+
+		// Identificar quién es el BOT (Gemini)
+		let geminiUser;
+		if (isGeminiChat) {
+			geminiUser = receiverUser;
+		} else {
+			// Si es mención, buscamos al usuario gemini_ai en la DB
+			geminiUser = await User.findOne({ username: "gemini_ai" });
+			if (!geminiUser) return; // Si no existe el bot, no hacemos nada
+		}
 
 		// 1. Simular "Escribiendo..."
 		const receiverSocketId = getReceiverSocketId(senderId);
-		if (receiverSocketId) io.to(receiverSocketId).emit("typing", receiverId);
+		// Si es mención, quizás deberíamos emitir a ambos participantes (TODO: Mejora futura)
+		if (receiverSocketId) io.to(receiverSocketId).emit("typing", geminiUser._id);
 
 		// 2. Obtener historial (limitado a últimos 10 mensajes para contexto)
 		const lastMessages = await Message.find({
@@ -121,20 +138,30 @@ const handleGeminiResponse = async (senderId, receiverId, userMessage, conversat
 
 		// 4. Crear mensaje de respuesta
 		const aiMessage = new Message({
-			senderId: receiverId, // Gemini es el remitente
-			receiverId: senderId, // Usuario es el receptor
+			senderId: geminiUser._id, // ✅ GEMINI ES EL REMITENTE
+			receiverId: senderId,     // Respondemos al que escribió (o al chat en general)
 			message: aiText
 		});
 
 		if (aiMessage) {
 			conversation.messages.push(aiMessage._id);
 			await Promise.all([conversation.save(), aiMessage.save()]);
+
+			// ✅ Poblamos el sender para que el frontend sepa que es Gemini
+			await aiMessage.populate("senderId", "username fullName profilePic");
 		}
 
-		// 5. Emitir respuesta y detener "Escribiendo..."
+		// 5. Emitir respuesta
 		if (receiverSocketId) {
-			io.to(receiverSocketId).emit("stopTyping", receiverId);
+			io.to(receiverSocketId).emit("stopTyping", geminiUser._id);
 			io.to(receiverSocketId).emit("newMessage", aiMessage);
+
+			// Si es un chat de grupo o mención, también deberíamos emitir al "receiverId" original si no es el bot? 
+			// Por ahora asumimos flujo 1 a 1 + mención simple.
+			const otherSocketId = getReceiverSocketId(receiverId);
+			if (otherSocketId && !isGeminiChat) {
+				io.to(otherSocketId).emit("newMessage", aiMessage);
+			}
 		}
 
 	} catch (error) {
@@ -151,8 +178,11 @@ export const getMessages = async (req, res) => {
 			participants: { $all: [senderId, userToChatId] },
 		}).populate({
 			path: "messages",
-			// ✅ NUEVO: Poblamos también el mensaje respondido dentro de cada mensaje
-			populate: { path: "replyTo", select: "message senderId fileType fileUrl" }
+			// ✅ POBLAR SENDER: Fundamental para distinguir mensajes de Gemini en chats normales
+			populate: [
+				{ path: "replyTo", select: "message senderId fileType fileUrl" },
+				{ path: "senderId", select: "username fullName profilePic" }
+			]
 		});
 
 		if (!conversation) return res.status(200).json([]);

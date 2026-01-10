@@ -23,14 +23,24 @@ const Message = ({ message }) => {
 
     if (!message) return null;
 
-    const fromMe = message.senderId === authUser?._id;
+    // ✅ Soporte para senderId poblado (Objeto) o ID simple (String)
+    const senderId = message.senderId?._id || message.senderId;
+    const fromMe = senderId === authUser?._id;
+
     const formattedTime = extractTime(message.createdAt);
     const chatClassName = fromMe ? "chat-end" : "chat-start";
 
     const isDeleted = message.deletedEveryone;
     const msgContent = isDeleted ? "🚫 Este mensaje fue eliminado" : message.message;
 
-    const profilePic = fromMe ? authUser?.profilePic : selectedConversation?.profilePic;
+    // ✅ LÓGICA DE AVATAR MEJORADA:
+    // 1. Si es mío -> authUser.profilePic
+    // 2. Si viene poblado (ej. Gemini) -> message.senderId.profilePic
+    // 3. Fallback -> selectedConversation.profilePic
+    const profilePic = fromMe
+        ? authUser?.profilePic
+        : (message.senderId?.profilePic || selectedConversation?.profilePic);
+
     const BACKEND_URL = "https://chat-sockeio-1.onrender.com";
     const fileUrl = message.fileUrl ? `${BACKEND_URL}${message.fileUrl}` : null;
 
