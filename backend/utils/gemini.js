@@ -30,6 +30,7 @@ export const getGeminiResponse = async (userMessage, history = []) => {
 
     } catch (error) {
         console.error("Error en Gemini API:", error);
-        return "Lo siento, estoy teniendo problemas para procesar tu solicitud en este momento.";
+        // Retornar el error real para debugging
+        return `Error de IA: ${error.message || "Error desconocido"}. Revisa tu API Key o cuota.`;
     }
 };
