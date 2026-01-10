@@ -5,17 +5,15 @@ import Login from "./pages/login/Login";
 import SignUp from "./pages/signup/SignUp";
 import { Toaster } from "react-hot-toast";
 import { useAuthContext } from "./context/AuthContext";
-import { CallContextProvider } from "./context/CallContext"; // ✅ IMPORTAR
-import VideoCallUI from "./components/calls/VideoCallUI";   // ✅ IMPORTAR
+import { CallContextProvider } from "./context/CallContext";
+import CallInterface from "./components/call/CallInterface"; // ✅ NUEVA INTERFAZ
 
 function App() {
 	const { authUser } = useAuthContext();
 	return (
-		// El CallProvider debe estar DENTRO del SocketProvider (que está en index.js probablemente)
-		// Si tu SocketProvider envuelve a App en main.jsx, esto funcionará.
 		<CallContextProvider>
 			{/* UI Global de Llamadas */}
-			<VideoCallUI />
+			<CallInterface />
 
 			<div className='p-4 h-screen flex items-center justify-center'>
 				<Routes>

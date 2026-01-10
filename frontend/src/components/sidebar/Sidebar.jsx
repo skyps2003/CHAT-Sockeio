@@ -15,7 +15,7 @@ const Sidebar = () => {
         <div
             className="
             w-full md:w-80 h-full flex flex-col
-            p-4 
+            p-2 md:p-4 
             bg-[#020617]/80 backdrop-blur-xl
             border-r border-[#22C55E]/30
             "
