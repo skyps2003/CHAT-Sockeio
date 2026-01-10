@@ -89,7 +89,7 @@ export const sendMessage = async (req, res) => {
 
 	} catch (error) {
 		console.log("Error en sendMessage controller:", error);
-		res.status(500).json({ error: "Error al enviar el mensaje" });
+		res.status(500).json({ error: "Error al enviar el mensaje", details: error.message });
 	}
 };
 
