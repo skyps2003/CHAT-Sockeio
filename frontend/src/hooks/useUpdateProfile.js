@@ -6,18 +6,40 @@ const useUpdateProfile = () => {
     const [loading, setLoading] = useState(false);
     const { setAuthUser } = useAuthContext();
     const BACKEND_URL = import.meta.env.MODE === "development"
-	? "http://localhost:5000"
-	: "https://chat-sockeio-1.onrender.com"
+        ? "http://localhost:5000"
+        : "https://chat-sockeio-1.onrender.com"
 
     const updateProfile = async ({ fullName, username, password, profilePic }) => {
         setLoading(true);
         try {
-            const res = await fetch(`${BACKEND_URL}/api/users/update`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include", // ✅ AGREGA ESTA LÍNEA (¡Vital!)
-                body: JSON.stringify({ fullName, username, password, profilePic }),
-            });
+            let res;
+
+            // ✅ LÓGICA: Si profilePic es un ARCHIVO (File Object), usamos FormData
+            // Si es un string (URL de avatar predefinido) o undefined, usamos JSON
+            if (profilePic && typeof profilePic !== "string") {
+                const formData = new FormData();
+                formData.append("fullName", fullName);
+                formData.append("username", username);
+                if (password) formData.append("password", password);
+                formData.append("profilePic", profilePic); // Aquí va el archivo
+
+                res = await fetch(`${BACKEND_URL}/api/users/update`, {
+                    method: "PUT",
+                    credentials: "include",
+                    body: formData, // FormData no lleva header Content-Type manual (el navegador lo pone)
+                });
+            } else {
+                // Modo Clásico (JSON) para avatars predefinidos
+                const payload = { fullName, username, password };
+                if (profilePic) payload.profilePic = profilePic;
+
+                res = await fetch(`${BACKEND_URL}/api/users/update`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include",
+                    body: JSON.stringify(payload),
+                });
+            }
 
             const data = await res.json();
             if (data.error) {

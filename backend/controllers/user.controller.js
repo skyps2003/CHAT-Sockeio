@@ -26,7 +26,15 @@ export const updateUser = async (req, res) => {
 		}
 
 		if (fullName) user.fullName = fullName;
-		if (profilePic) user.profilePic = profilePic;
+
+		// ✅ LÓGICA DE AVATAR:
+		// 1. Si hay archivo subido, usamos esa ruta local.
+		// 2. Si no hay archivo pero hay profilePic en body (preset), lo usamos.
+		if (req.file) {
+			user.profilePic = `/uploads/${req.file.filename}`;
+		} else if (profilePic) {
+			user.profilePic = profilePic;
+		}
 
 		if (username && username !== user.username) {
 			const existingUser = await User.findOne({ username });

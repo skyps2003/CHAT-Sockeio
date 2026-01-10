@@ -16,6 +16,10 @@ const ProfileSettings = ({ onClose }) => {
     });
 
     // ✅ LÓGICA: Detectar si hubo cambios reales respecto a la data original
+    // ✅ ESTADO LOCAL PARA LA PREVISUALIZACIÓN
+    const [previewUrl, setPreviewUrl] = useState(authUser.profilePic);
+
+    // ✅ LÓGICA: Detectar si hubo cambios reales respecto a la data original
     const hasChanges =
         inputs.fullName !== authUser.fullName ||
         inputs.username !== authUser.username ||
@@ -24,6 +28,17 @@ const ProfileSettings = ({ onClose }) => {
 
     // ✅ LÓGICA: Validar contraseña solo si se escribió algo
     const passwordValid = !inputs.password || (inputs.password === inputs.confirmPassword);
+
+    // ✅ MANEJADOR PARA SUBIR ARCHIVO
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setInputs({ ...inputs, profilePic: file });
+            // Crear URL temporal para previsualizar
+            const objectUrl = URL.createObjectURL(file);
+            setPreviewUrl(objectUrl);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -59,6 +74,13 @@ const ProfileSettings = ({ onClose }) => {
         "https://api.dicebear.com/9.x/micah/svg?seed=Milo",
         "https://api.dicebear.com/9.x/micah/svg?seed=Daisy",
         "https://api.dicebear.com/9.x/micah/svg?seed=George",
+        // ✅ NUEVOS AVATARES
+        "https://api.dicebear.com/9.x/micah/svg?seed=Bear",
+        "https://api.dicebear.com/9.x/micah/svg?seed=Tiger",
+        "https://api.dicebear.com/9.x/micah/svg?seed=Lion",
+        "https://api.dicebear.com/9.x/micah/svg?seed=Panda",
+        "https://api.dicebear.com/9.x/micah/svg?seed=Fox",
+        "https://api.dicebear.com/9.x/micah/svg?seed=Wolf",
     ];
 
     return (
@@ -101,14 +123,22 @@ const ProfileSettings = ({ onClose }) => {
                         <div className="relative group">
                             <div className="w-24 h-24 rounded-full border-4 border-[#22c55e] shadow-[0_0_25px_rgba(34,197,94,0.4)] overflow-hidden">
                                 <img
-                                    src={inputs.profilePic}
+                                    src={previewUrl} // ✅ Usar PREVIEW URL
                                     alt="Avatar"
                                     className="w-full h-full object-cover"
                                 />
                             </div>
-                            <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+
+                            {/* ✅ BOTÓN DE CÁMARA + INPUT FILE OCULTO */}
+                            <label className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">
                                 <BsCamera className="text-white" />
-                            </div>
+                                <input
+                                    type="file"
+                                    hidden
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                />
+                            </label>
                         </div>
                         <p className="text-white font-semibold">{authUser.fullName}</p>
                         <span className="text-xs text-[#22c55e]">@{authUser.username}</span>
@@ -124,7 +154,10 @@ const ProfileSettings = ({ onClose }) => {
                                 <button
                                     key={i}
                                     type="button"
-                                    onClick={() => setInputs({ ...inputs, profilePic: url })}
+                                    onClick={() => {
+                                        setInputs({ ...inputs, profilePic: url });
+                                        setPreviewUrl(url); // Actualizar preview también
+                                    }}
                                     className={`w-12 h-12 rounded-full border-2 transition ${inputs.profilePic === url
                                         ? "border-[#22c55e] scale-110"
                                         : "border-transparent opacity-50 hover:opacity-100"
@@ -173,8 +206,8 @@ const ProfileSettings = ({ onClose }) => {
                                 <input
                                     type="password"
                                     className={`w-full h-10 px-3 rounded-lg bg-[#020617] border text-white outline-none placeholder-gray-600 ${inputs.password !== inputs.confirmPassword
-                                            ? "border-red-500 focus:border-red-500"
-                                            : "border-gray-700 focus:border-[#22c55e]"
+                                        ? "border-red-500 focus:border-red-500"
+                                        : "border-gray-700 focus:border-[#22c55e]"
                                         }`}
                                     placeholder="Confirmar contraseña"
                                     value={inputs.confirmPassword}
