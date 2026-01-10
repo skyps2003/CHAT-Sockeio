@@ -103,13 +103,21 @@ export const CallContextProvider = ({ children }) => {
             if (myVideo.current) myVideo.current.srcObject = currentStream;
 
             // Iniciar llamada PeerJS
+            if (!peerInstance.current) {
+                console.error("PeerJS no está inicializado");
+                return;
+            }
+
             const call = peerInstance.current.call(id, currentStream);
 
-            call.on("stream", (userVideoStream) => {
-                if (userVideo.current) userVideo.current.srcObject = userVideoStream;
-            });
-
-            connectionRef.current = call;
+            if (call) {
+                call.on("stream", (userVideoStream) => {
+                    if (userVideo.current) userVideo.current.srcObject = userVideoStream;
+                });
+                connectionRef.current = call;
+            } else {
+                console.error("Error al iniciar llamada (call es null)");
+            }
 
             // Avisar por Socket para mostrar la UI al otro usuario
             socket.emit("callUser", {
