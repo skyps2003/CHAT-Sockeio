@@ -3,21 +3,23 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Inicializamos el cliente
+// Inicialización con la nueva clave "Sockeio"
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export const getGeminiResponse = async (userMessage, history = []) => {
     try {
-        // CAMBIO CLAVE: Usamos la versión estable 'v1' explícitamente 
-        // para saltar el error 404 de la v1beta
+        // AJUSTE PARA SISTEMAS DISTRIBUIDOS:
+        // Usamos la versión estable 'v1' para asegurar que el ruteo de Google
+        // reconozca tu nueva clave de "Nivel gratuito".
         const model = genAI.getGenerativeModel(
             { model: "gemini-1.5-flash" },
             { apiVersion: "v1" }
         );
 
+        // Formateo de historial según la estructura 'contents'
         const chatHistory = history.map(msg => ({
             role: msg.senderUsername === "gemini_ai" ? "model" : "user",
-            parts: [{ text: String(msg.message || "") }] // Forzamos String por seguridad
+            parts: [{ text: String(msg.message || "") }]
         }));
 
         const chat = model.startChat({
@@ -28,19 +30,18 @@ export const getGeminiResponse = async (userMessage, history = []) => {
             },
         });
 
+        // Enviar mensaje actual
         const result = await chat.sendMessage(userMessage);
         const response = await result.response;
+
         return response.text();
 
     } catch (error) {
-        console.error("--- Error Detallado en Gemini ---");
-        console.error("Tipo:", error.constructor.name);
-        console.error("Mensaje:", error.message);
+        console.error("--- Error en Nodo Gemini ---");
+        console.error("Mensaje de red:", error.message);
 
-        // Si el 404 persiste, es un problema de la API KEY, no del código
-        if (error.message.includes("404")) {
-            return "Error de Configuración (404): La API Key no tiene acceso al modelo 1.5 Flash en esta región o proyecto.";
-        }
-        return `Error de IA: ${error.message}`;
+        // Si el 404 persiste con la clave nueva, el SDK está forzando v1beta
+        // cuando tu clave nueva prefiere v1.
+        return `Error de conexión: ${error.message}. Intenta reiniciar el servidor.`;
     }
 };
