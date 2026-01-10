@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { BsSend, BsPaperclip, BsX, BsMic, BsStopCircle, BsPencil, BsReply } from "react-icons/bs";
+import { BsSend, BsPaperclip, BsImage, BsX, BsMic, BsStopCircle, BsPencil, BsReply } from "react-icons/bs"; // ✅ Importar BsImage
 import useSendMessage from "../../hooks/useSendMessage";
 import useEditMessage from "../../hooks/useEditMessage"; // ✅ Hook Editar
 import { useSocketContext } from "../../context/SocketContext";
@@ -15,6 +15,7 @@ const MessageInput = () => {
 	const [recordingDuration, setRecordingDuration] = useState(0);
 
 	const fileInputRef = useRef(null);
+	const imageInputRef = useRef(null); // ✅ Ref para imágenes
 	const typingTimeoutRef = useRef(null);
 	const inputRef = useRef(null); // Para enfocar el input
 
@@ -216,6 +217,24 @@ const MessageInput = () => {
 				) : (
 					/* MODO NORMAL */
 					<>
+						{/* ✅ NUEVO: INPUT SOLO IMÁGENES */}
+						<input
+							type="file"
+							ref={imageInputRef}
+							className="hidden"
+							accept="image/*"
+							onChange={handleFileChange}
+						/>
+
+						{/* ✅ NUEVO: BOTÓN FOTO */}
+						<button
+							type="button"
+							className="text-sky-500 hover:text-sky-400 transition-colors"
+							onClick={() => imageInputRef.current.click()}
+						>
+							<BsImage size={20} />
+						</button>
+
 						<input
 							type="file"
 							ref={fileInputRef}
