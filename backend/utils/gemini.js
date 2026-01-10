@@ -8,13 +8,8 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export const getGeminiResponse = async (userMessage, history = []) => {
     try {
-        // AJUSTE PARA SISTEMAS DISTRIBUIDOS:
-        // Usamos la versión estable 'v1' para asegurar que el ruteo de Google
-        // reconozca tu nueva clave de "Nivel gratuito".
-        const model = genAI.getGenerativeModel(
-            { model: "gemini-1.5-flash" },
-            { apiVersion: "v1" }
-        );
+        // AJUSTE: Usamos la configuración por defecto del SDK (v1beta) que sí soporta 1.5-flash
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         // Formateo de historial según la estructura 'contents'
         const chatHistory = history.map(msg => ({
