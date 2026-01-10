@@ -8,7 +8,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export const getGeminiResponse = async (userMessage, history = []) => {
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         // Convertir historial de chat al formato de Gemini
         // history espera: [{ role: "user" | "model", parts: [{ text: "..." }] }]
