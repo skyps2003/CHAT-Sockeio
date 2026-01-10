@@ -1,56 +1,23 @@
-import { useState } from "react";
 import { IoSearchSharp } from "react-icons/io5";
 import useConversation from "../../zustand/useConversation";
 import useGetConversations from "../../hooks/useGetConversations";
 import toast from "react-hot-toast";
 
-const SearchInput = () => {
-    const [search, setSearch] = useState("");
-    const { setSelectedConversation } = useConversation();
-    const { conversations } = useGetConversations();
+const SearchInput = ({ searchTerm, setSearchTerm }) => {
+    // const [search, setSearch] = useState(""); // ❌ Estado local removido
+    // const { setSelectedConversation } = useConversation();
+    // const { conversations } = useGetConversations();
 
     // --- FUNCIÓN DE BÚSQUEDA MEJORADA (Ignora tildes y mayúsculas) ---
-    const normalizeText = (text) => {
-        return text
-            .toLowerCase()
-            .normalize("NFD") // Descompone caracteres (ej: á -> a + ´)
-            .replace(/[\u0300-\u036f]/g, ""); // Elimina los diacríticos (tildes)
-    };
+    /* 
+       NOTA: El filtrado ahora lo maneja "Sidebar -> Conversations" en tiempo real.
+       Este componente solo actualiza el estado "searchTerm" del padre.
+    */
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        if (!search) return;
-
-        if (search.length < 3) {
-            return toast.error("Escribe al menos 3 caracteres", {
-                style: {
-                    borderRadius: '10px',
-                    background: '#333',
-                    color: '#fff',
-                },
-            });
-        }
-
-        const term = normalizeText(search);
-
-        // Busca coincidencia flexible
-        const conversation = conversations.find((c) =>
-            normalizeText(c.fullName).includes(term)
-        );
-
-        if (conversation) {
-            setSelectedConversation(conversation);
-            setSearch(""); // Limpiar input tras encontrar
-        } else {
-            toast.error("Usuario no encontrado 🤷‍♂️", {
-                style: {
-                    borderRadius: '10px',
-                    background: '#333',
-                    color: '#fff',
-                },
-            });
-        }
+        // Opcional: Si el usuario da Enter, podríamos seleccionar el primero de la lista filtrada
+        // Pero por ahora solo evitamos el reload.
     };
 
     return (
@@ -72,8 +39,8 @@ const SearchInput = () => {
                             placeholder-gray-500
                             focus:outline-none
                         "
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        value={searchTerm} // ✅ Usamos el estado del padre
+                        onChange={(e) => setSearchTerm(e.target.value)} // ✅ Actualizamos padre
                     />
 
                     {/* ICON BUTTON */}
@@ -85,10 +52,10 @@ const SearchInput = () => {
                     </button>
 
                     {/* CLEAR BUTTON (Solo si hay texto) */}
-                    {search && (
+                    {searchTerm && (
                         <button
                             type="button"
-                            onClick={() => setSearch("")}
+                            onClick={() => setSearchTerm("")}
                             className="absolute right-3 text-gray-500 hover:text-white transition animate-in zoom-in"
                         >
                             ✕

@@ -8,27 +8,27 @@ import { useAuthContext } from "../../context/AuthContext"; // ✅ Contexto
 
 const Sidebar = () => {
     const [showProfile, setShowProfile] = useState(false);
-    const { authUser } = useAuthContext(); // ✅ Hook
+    const [searchTerm, setSearchTerm] = useState(""); // ✅ Estado para búsqueda en tiempo real
+    const { authUser } = useAuthContext();
 
     return (
         <div
             className="
             w-full md:w-80 h-full flex flex-col
             p-4 
-            bg-[#020617]/80 backdrop-blur-xl /* Negro Carbón con transparencia */
-            border-r border-[#22C55E]/30    /* Borde Verde Neón sutil */
+            bg-[#020617]/80 backdrop-blur-xl
+            border-r border-[#22C55E]/30
             "
         >
             {/* Search */}
             <div className="mb-4">
-                <SearchInput />
+                <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
             </div>
 
-            {/* Título de sección opcional o separador */}
+            {/* Título y Avatar */}
             <div className="px-2 mb-2 flex justify-between items-center text-xs font-bold text-gray-400 uppercase tracking-wider">
                 <span>Chats</span>
 
-                {/* ✅ Avatar del usuario actual como botón de ajustes */}
                 <button
                     onClick={() => setShowProfile(true)}
                     className="flex items-center gap-2 hover:bg-white/5 p-1.5 rounded-lg transition group"
@@ -43,15 +43,15 @@ const Sidebar = () => {
                 </button>
             </div>
 
-            {/* Lista de chats */}
+            {/* Lista de chats filtrada */}
             <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
-                <Conversations />
+                <Conversations searchTerm={searchTerm} />
             </div>
 
             {/* Logout */}
             <LogoutButton />
 
-            {/* ✅ MODAL DE PERFIL */}
+            {/* Modal Perfil */}
             {showProfile && <ProfileSettings onClose={() => setShowProfile(false)} />}
         </div>
     );

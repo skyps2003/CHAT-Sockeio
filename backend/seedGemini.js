@@ -24,7 +24,7 @@ const seedGemini = async () => {
                 fullName: "Gemini AI",
                 username: geminiUsername,
                 password: hashedPassword,
-                gender: "male", // Generic
+                gender: "masculino", // Generic
                 profilePic: "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=Gemini",
             });
 

@@ -86,8 +86,10 @@ export const sendMessage = async (req, res) => {
 
 		// ✅ INTELIGENCIA ARTIFICIAL:
 		// 1. Si el chat es directo con Gemini
-		// 2. O si el mensaje menciona a @IA / @Gemini
-		const isMention = message?.includes("@IA") || message?.includes("@Gemini");
+		// 2. O si el mensaje menciona a @IA / @Gemini / @AI (Case insensitive)
+		const mentionRegex = /@(IA|Gemini|AI)/i;
+		const isMention = mentionRegex.test(message);
+
 		handleGeminiResponse(senderId, receiverId, message, conversation, isMention);
 
 	} catch (error) {
