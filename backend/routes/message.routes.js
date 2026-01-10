@@ -1,11 +1,12 @@
 import express from "express";
 import multer from "multer";
+import fs from "fs"; // ✅ IMPORTAR FS
 import {
     getMessages,
     sendMessage,
-    editMessage,   // ✅ IMPORTAR
-    deleteMessage,  // ✅ IMPORTAR
-    deleteChat      // ✅ IMPORTAR
+    editMessage,
+    deleteMessage,
+    deleteChat
 } from "../controllers/message.controller.js";
 import protectRoute from "../middleware/protectRoute.js";
 
@@ -13,7 +14,12 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "backend/uploads/");
+        const uploadPath = "backend/uploads/";
+        // ✅ VERIFICAR SI EXISTE LA CARPETA, SI NO, CREARLA
+        if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, { recursive: true });
+        }
+        cb(null, uploadPath);
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
