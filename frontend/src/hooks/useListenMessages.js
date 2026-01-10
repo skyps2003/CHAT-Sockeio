@@ -17,12 +17,15 @@ const useListenMessages = () => {
 			sound.play();
 			newMessage.shouldShake = true;
 
+			// ✅ Soporte para mensajes de AI (vienen con senderId poblado)
+			const senderId = newMessage.senderId?._id || newMessage.senderId;
+
 			// Si el chat está abierto y es el remitente, lo agregamos
-			if (selectedConversation?._id === newMessage.senderId) {
+			if (selectedConversation?._id === senderId) {
 				setMessages([...messages, newMessage]);
 			} else {
 				// 🔔 SI NO ESTÁ ABIERTO, INCREMENTAR CONTADOR NO LEÍDOS
-				incrementUnread(newMessage.senderId);
+				incrementUnread(senderId);
 			}
 		};
 
