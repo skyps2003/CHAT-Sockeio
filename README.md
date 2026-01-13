@@ -1,4 +1,4 @@
-# Proyecto de Sistemas Distribuidos - Chat & Videollamadas
+# Proyecto de Sistemas Distribuidos - Chat 
 
 Este es una aplicación completa de Chat y Videollamadas en tiempo real, construida con el stack MERN (MongoDB, Express, React, Node.js) y potenciada por WebSockets y WebRTC.
 
